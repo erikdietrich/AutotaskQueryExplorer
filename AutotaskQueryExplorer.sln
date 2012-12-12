@@ -5,6 +5,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutotaskQueryExplorer", "Au
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutotaskShell", "AutotaskShell\AutotaskShell.csproj", "{50C0D975-A096-4012-8FAE-7E6307F04BDE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutotaskQueryService", "AutotaskQueryService\AutotaskQueryService.csproj", "{2FA2DD4D-7353-46FB-A86A-2C6F10314E41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutotaskQueryServiceTest", "AutotaskQueryServiceTest\AutotaskQueryServiceTest.csproj", "{F5159DDD-DF2B-42B6-AB44-C2FBD2FA4826}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +23,14 @@ Global
 		{50C0D975-A096-4012-8FAE-7E6307F04BDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50C0D975-A096-4012-8FAE-7E6307F04BDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50C0D975-A096-4012-8FAE-7E6307F04BDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FA2DD4D-7353-46FB-A86A-2C6F10314E41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FA2DD4D-7353-46FB-A86A-2C6F10314E41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FA2DD4D-7353-46FB-A86A-2C6F10314E41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FA2DD4D-7353-46FB-A86A-2C6F10314E41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5159DDD-DF2B-42B6-AB44-C2FBD2FA4826}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5159DDD-DF2B-42B6-AB44-C2FBD2FA4826}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5159DDD-DF2B-42B6-AB44-C2FBD2FA4826}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5159DDD-DF2B-42B6-AB44-C2FBD2FA4826}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
