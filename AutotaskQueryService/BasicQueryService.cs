@@ -5,24 +5,22 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using AutotaskQueryService.net.autotask.webservices5;
+using System.Reflection;
 
 namespace AutotaskQueryService
 {
-    public class BasicQueryService
+    public class BasicQueryService : IQueryService
     {
         private readonly ATWS _webService = new ATWS();
 
-        public IEnumerable<IEnumerable<string>> ExecuteQuery(string command)
+        public ResultSet ExecuteQuery(string command)
         {
             var sqlQuery = new SqlQuery(command);
-            var autotaskQuery = new AutotaskQuery(sqlQuery.Entity);
-            if(!string.IsNullOrEmpty(sqlQuery.WhereClause))
-                autotaskQuery.SetWhereClause(sqlQuery.WhereClause);
+            var entities = GetEntitiesFromAutotask(sqlQuery.Entity, sqlQuery.WhereClause);
+            if (!entities.Any())
+                return ResultSet.Empty;
 
-            var results = _webService.query(autotaskQuery.ToString());
-
-            foreach (var result in results.EntityResults)
-                yield return GetRow(sqlQuery, result);
+            return BuildResultSet(sqlQuery, entities);
         }
 
         public void Login(string userName, string password)
@@ -34,10 +32,63 @@ namespace AutotaskQueryService
             _webService.Credentials = credCache;
         }
 
-        private static IEnumerable<string> GetRow(SqlQuery sqlQuery, Entity result)
+        private IEnumerable<Entity> GetEntitiesFromAutotask(string entityName, string whereClause)
         {
-            foreach (string field in sqlQuery.Columns)
-                yield return string.Format(" {0} ", result.GetType().GetProperty(field).GetValue(result, null));
+            var autotaskQuery = new AutotaskQuery(entityName);
+
+            if (!string.IsNullOrEmpty(whereClause))
+                autotaskQuery.SetWhereClause(whereClause);
+
+            return _webService.query(autotaskQuery.ToString()).EntityResults;
+        }
+
+        private static ResultSet BuildResultSet(SqlQuery sqlQuery, IEnumerable<Entity> entities)
+        {
+            var columnHeaders = GetColumnHeaders(sqlQuery, entities.First().GetType());
+            var resultSet = new ResultSet(columnHeaders);
+
+            foreach (var result in entities)
+                resultSet.Add(BuildResultSetRow(sqlQuery.Columns, result).ToList());
+
+            return resultSet;
+        }
+
+        private static IEnumerable<string> GetColumnHeaders(SqlQuery query, Type entityType)
+        {
+            var columns = new List<string>();
+            if (!query.Columns.Any())
+            {
+                return entityType.GetProperties().Where(pr => pr.PropertyType == typeof(Object)).Select(pr => pr.Name);
+            }
+            return query.Columns;
+        }
+
+        private static IEnumerable<string> BuildResultSetRow(IEnumerable<string> columns, Entity result)
+        {
+            foreach (string field in columns)
+            {
+                var type = result.GetType();
+                var property = type.GetProperty(field, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                yield return property.GetValue(result, null).ToString();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+                if (_webService != null)
+                    _webService.Dispose();
+        }
+
+        ~BasicQueryService()
+        {
+            Dispose(false);
         }
     }
 }

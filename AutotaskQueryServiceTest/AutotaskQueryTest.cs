@@ -10,7 +10,7 @@ namespace AutotaskQueryServiceTest
     [TestClass]
     public class AutotaskQueryTest
     {
-        protected AutotaskQuery Target { get; set; }
+        private AutotaskQuery Target { get; set; }
 
         [TestInitialize]
         public void BeforeEachTest()

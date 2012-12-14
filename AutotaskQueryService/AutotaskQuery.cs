@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace AutotaskQueryService
 {
-    public class AutotaskQuery
+    internal class AutotaskQuery
     {
         public const string RootNodeName = "queryxml";
         public const string EntityNodeName = "entity";

@@ -9,11 +9,11 @@ using Microsoft.Data.Schema.ScriptDom.Sql;
 
 namespace AutotaskQueryService
 {
-    public class SqlQuery
+    internal class SqlQuery
     {
-        private const string SELECT = "SELECT";
-        private const string FROM = "FROM";
-        private const string WHERE = "WHERE";
+        private const string SELECT = "select";
+        private const string FROM = "from";
+        private const string WHERE = "where";
 
         public class InvalidSyntaxException : Exception { }
 
@@ -21,16 +21,22 @@ namespace AutotaskQueryService
 
         public IEnumerable<string> Columns { get { return GetColumnsFromSqlStatement(_sql); } }
 
-        public string Entity { get { return GetEntityFromSql(_sql); } }
-
-        public string WhereClause 
-        {
+        public string Entity 
+        { 
             get 
+            { 
+                return _sql.Split(' ').SkipWhile(token => token != FROM).First(token => token != FROM); 
+            } 
+        }
+
+        public string WhereClause
+        {
+            get
             {
-                int index = GetIndexOfLastCharacter(_sql, WHERE);
+                int index = GetIndexOfLastCharacter(WHERE);
                 bool didWeFindTheString = index >= 0;
                 return didWeFindTheString ? _sql.Substring(index).Trim() : string.Empty;
-            } 
+            }
         }
 
         public SqlQuery(string sql)
@@ -38,7 +44,7 @@ namespace AutotaskQueryService
             if (ContainsSyntaxErrors(sql))
                 throw new InvalidSyntaxException();
 
-            _sql = sql;
+            _sql = sql.ToLower();
         }
 
         private static bool ContainsSyntaxErrors(string sql)
@@ -49,11 +55,11 @@ namespace AutotaskQueryService
             return errors.Count > 0;
         }
 
-        private static IEnumerable<string> GetColumnsFromSqlStatement(string sqlStatement)
+        private IEnumerable<string> GetColumnsFromSqlStatement(string sqlStatement)
         {
-            int startIndex = GetIndexOfLastCharacter(sqlStatement, SELECT);
-            int endIndex = sqlStatement.IndexOf(FROM, StringComparison.InvariantCultureIgnoreCase);
-            var columns = GetColumnNamesFromStatement(sqlStatement, startIndex, endIndex);
+            int startIndex = GetIndexOfLastCharacter(SELECT);
+            int endIndex = sqlStatement.IndexOf(FROM);
+            var columns = GetNonEmptyTokensBetween(startIndex, endIndex).Select(str => str.Replace(",", string.Empty));
 
             if (DoColumnsRepresentSelectAll(columns))
                 return Enumerable.Empty<string>();
@@ -61,23 +67,19 @@ namespace AutotaskQueryService
             return columns;
         }
 
-        private static string GetEntityFromSql(string sqlStatement)
+        private int GetIndexOfLastCharacter(string substring)
         {
-            return sqlStatement.Split(' ').SkipWhile(token => token != FROM).First(token => token != FROM);
-        }
-
-        private static int GetIndexOfLastCharacter(string sqlStatement, string substring)
-        {
-            int startIndex = sqlStatement.IndexOf(substring, StringComparison.InvariantCultureIgnoreCase);
+            int startIndex = _sql.IndexOf(substring);
             return startIndex >= 0 ? startIndex + substring.Length : -1;
         }
 
-        private static IEnumerable<string> GetColumnNamesFromStatement(string sqlStatement, int startIndex, int endIndex)
+        private IEnumerable<string> GetNonEmptyTokensBetween(int startIndex, int endIndex)
         {
-            var columnText = sqlStatement.Substring(startIndex, endIndex - startIndex);
+            var columnText = _sql.Substring(startIndex, endIndex - startIndex);
             var nonEmptyTokens = columnText.Split(' ').Where(token => !string.IsNullOrEmpty(token));
-            return nonEmptyTokens.Select(token => token.Trim().Replace(",", string.Empty));
+            return nonEmptyTokens.Select(token => token.Trim());
         }
+
         private static bool DoColumnsRepresentSelectAll(IEnumerable<string> columns)
         {
             return columns.Count() == 1 && columns.ElementAt(0) == "*";

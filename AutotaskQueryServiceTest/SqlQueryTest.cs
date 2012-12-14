@@ -13,7 +13,7 @@ namespace AutotaskQueryServiceTest
     [TestClass]
     public class SqlQueryTest
     {
-        protected SqlQuery Target { get; set; }
+        private SqlQuery Target { get; set; }
 
         [TestInitialize]
         public void BeforeEachTest()
@@ -58,7 +58,7 @@ namespace AutotaskQueryServiceTest
                 const string column2 = "AccountName";
                 Target = new SqlQuery(String.Format("SELECT id, {0} FROM Account", column2));
 
-                Assert.AreEqual<string>(column2, Target.Columns.ElementAt(1));
+                Assert.AreEqual<string>(column2.ToLower(), Target.Columns.ElementAt(1));
             }
 
             [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
@@ -83,7 +83,7 @@ namespace AutotaskQueryServiceTest
                 const string column2 = "AccountName";
                 Target = new SqlQuery(String.Format("select id, {0} FROM Account", column2));
 
-                Assert.AreEqual<string>(column2, Target.Columns.ElementAt(1));
+                Assert.AreEqual<string>(column2.ToLower(), Target.Columns.ElementAt(1));
             }
         }
 
@@ -95,6 +95,16 @@ namespace AutotaskQueryServiceTest
             {
                 const string entity = "account";
                 Target = new SqlQuery(String.Format("SELECT * FROM {0}", entity));
+
+                Assert.AreEqual<string>(entity, Target.Entity);
+            }
+
+            /// <summary>This is in response to a bug I discovered in live action while using the tool</summary>
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Returns_Correct_Value_When_From_Is_Not_Capitlized()
+            {
+                const string entity = "account";
+                Target = new SqlQuery(String.Format("select * from {0}", entity));
 
                 Assert.AreEqual<string>(entity, Target.Entity);
             }
