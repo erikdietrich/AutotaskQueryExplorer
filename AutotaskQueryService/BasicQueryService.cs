@@ -48,7 +48,7 @@ namespace AutotaskQueryService
             var resultSet = new ResultSet(columnHeaders);
 
             foreach (var result in entities)
-                resultSet.Add(BuildResultSetRow(sqlQuery.Columns, result).ToList());
+                resultSet.Add(BuildResultSetRow(columnHeaders, result).ToList());
 
             return resultSet;
         }
@@ -58,7 +58,7 @@ namespace AutotaskQueryService
             var columns = new List<string>();
             if (!query.Columns.Any())
             {
-                return entityType.GetProperties().Where(pr => pr.PropertyType == typeof(Object)).Select(pr => pr.Name);
+                return entityType.GetProperties().Where(pr => pr.PropertyType == typeof(Object)).Select(pr => pr.Name.ToLower());
             }
             return query.Columns;
         }
@@ -69,7 +69,8 @@ namespace AutotaskQueryService
             {
                 var type = result.GetType();
                 var property = type.GetProperty(field, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-                yield return property.GetValue(result, null).ToString();
+                object propertyValue = property.GetValue(result, null);
+                yield return string.Format("{0}", propertyValue);
             }
         }
 

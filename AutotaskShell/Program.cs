@@ -19,9 +19,6 @@ namespace AutotaskShell
             {
                 var gatekeeper = new Gatekeeper(_service);
                 gatekeeper.TryLoginUntilSuccess();
-                int x = 6; int y = 7;
-                if((x & y) > 7)
-                    Console.WriteLine("asdF");
 
                 Console.Write(">");
 
