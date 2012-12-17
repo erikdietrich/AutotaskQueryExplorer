@@ -22,31 +22,56 @@ namespace AutotaskShell
 
                 Console.Write(">");
 
-                for (string query = Console.ReadLine(); !IsExitRequest(query); query = Console.ReadLine())
-                    ExecuteQuery(query);
+                for (string command = Console.ReadLine(); !IsExitCommand(command); command = Console.ReadLine())
+                    ExecuteCommand(command);
             }
         }
 
-        private static bool IsExitRequest(string query)
+        private static bool IsExitCommand(string query)
         {
             return query.Equals("exit", StringComparison.CurrentCultureIgnoreCase);
         }
 
-        private static void ExecuteQuery(string query)
+        private static void ExecuteCommand(string command)
         {
-            var resultSet = TryExecuteQuery(query);
-
-            foreach (var headerItem in resultSet.HeaderRow)
-                Console.Write(string.Format(" {0} ", headerItem));
-
-            Console.Write("\n\n");
-
-            foreach (var row in resultSet)
-                WriteRow(row);
+            if (IsNonQueryCommand(command))
+                PerformNonQueryCommand(command);
+            else
+                PerformQueryCommand(command);
 
             Console.Write(">");
         }
 
+        private static bool IsNonQueryCommand(string command)
+        {
+            return command.Equals("clear", StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private static void PerformNonQueryCommand(string command)
+        {
+            if(command.Equals("clear", StringComparison.InvariantCultureIgnoreCase))
+                Console.Clear();
+        }
+
+        private static void PerformQueryCommand(string query)
+        {
+            var resultSet = TryExecuteQuery(query);
+            WriteHeader(resultSet);
+            WriteResults(resultSet);
+        }
+
+        private static void WriteHeader(ResultSet resultSet)
+        {
+            foreach (var headerItem in resultSet.HeaderRow)
+                Console.Write(string.Format(" {0} ", headerItem));
+
+            Console.Write("\n\n");
+        }
+        private static void WriteResults(ResultSet resultSet)
+        {
+            foreach (var row in resultSet)
+                WriteRow(row);
+        }
         private static void WriteRow(IEnumerable<string> row)
         {
             foreach (var column in row)

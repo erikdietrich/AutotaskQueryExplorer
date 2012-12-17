@@ -133,6 +133,24 @@ namespace AutotaskQueryServiceTest
 
                 StringAssert.Contains(Target.ToString(), "op=\"lessthan\">21");
             }
+
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Works_With_Quotes_For_Strings()
+            {
+                string stringValue = "asdf";
+                Target.SetWhereClause(String.Format("stringcol = '{0}'", stringValue));
+
+                StringAssert.Contains(Target.ToString(), String.Format("op=\"equals\">{0}", stringValue));
+            }
+
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Works_With_Spaces_In_Quote_Values()
+            {
+                string stringValue = "value with spaces";
+                Target.SetWhereClause(String.Format("stringcol = '{0}'", stringValue));
+
+                StringAssert.Contains(Target.ToString(), String.Format("op=\"equals\">{0}", stringValue));
+            }
         }
     }
 }

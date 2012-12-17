@@ -13,14 +13,20 @@ namespace AutotaskQueryService
     {
         private readonly ATWS _webService = new ATWS();
 
+        private readonly IBuildResultSets _builder;
+
+        /// <summary>Dependency injected constructor</summary>
+        /// <param name="builder">The result set builder scheme to use</param>
+        public BasicQueryService(IBuildResultSets builder = null)
+        {
+            _builder = builder ?? new ResultSetBuilder();
+        }
+
         public ResultSet ExecuteQuery(string command)
         {
             var sqlQuery = new SqlQuery(command);
             var entities = GetEntitiesFromAutotask(sqlQuery.Entity, sqlQuery.WhereClause);
-            if (!entities.Any())
-                return ResultSet.Empty;
-
-            return BuildResultSet(sqlQuery, entities);
+            return _builder.BuildResultSet(sqlQuery, entities);
         }
 
         public void Login(string userName, string password)
@@ -42,38 +48,6 @@ namespace AutotaskQueryService
             return _webService.query(autotaskQuery.ToString()).EntityResults;
         }
 
-        private static ResultSet BuildResultSet(SqlQuery sqlQuery, IEnumerable<Entity> entities)
-        {
-            var columnHeaders = GetColumnHeaders(sqlQuery, entities.First().GetType());
-            var resultSet = new ResultSet(columnHeaders);
-
-            foreach (var result in entities)
-                resultSet.Add(BuildResultSetRow(columnHeaders, result).ToList());
-
-            return resultSet;
-        }
-
-        private static IEnumerable<string> GetColumnHeaders(SqlQuery query, Type entityType)
-        {
-            var columns = new List<string>();
-            if (!query.Columns.Any())
-            {
-                return entityType.GetProperties().Where(pr => pr.PropertyType == typeof(Object)).Select(pr => pr.Name.ToLower());
-            }
-            return query.Columns;
-        }
-
-        private static IEnumerable<string> BuildResultSetRow(IEnumerable<string> columns, Entity result)
-        {
-            foreach (string field in columns)
-            {
-                var type = result.GetType();
-                var property = type.GetProperty(field, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-                object propertyValue = property.GetValue(result, null);
-                yield return string.Format("{0}", propertyValue);
-            }
-        }
-
         public void Dispose()
         {
             Dispose(true);
@@ -82,9 +56,8 @@ namespace AutotaskQueryService
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
-                if (_webService != null)
-                    _webService.Dispose();
+            if (disposing && _webService != null)
+                _webService.Dispose();
         }
 
         ~BasicQueryService()

@@ -43,10 +43,18 @@ namespace AutotaskQueryService
             var tokens = sqlClause.Split(' ');
             string field = tokens[0];
             string op = _operatorMappings[tokens[1]];
-            string value = tokens[2];
+            string value = GetValue(tokens);
 
-            var queryNode = BuildQueryNode(field, op, value);
+            var queryNode = BuildQueryNode(field, op, value.Replace("'", string.Empty));
             _queryClauses.Add(queryNode);
+        }
+
+        private static string GetValue(string[] tokens)
+        {
+            if (tokens.Count() > 3)
+                return String.Join(" ", tokens.Skip(2));
+            else
+                return tokens[2];
         }
 
         public override string ToString()

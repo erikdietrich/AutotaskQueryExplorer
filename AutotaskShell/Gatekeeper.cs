@@ -29,7 +29,7 @@ namespace AutotaskShell
             {
                 Login();
             }
-            catch (Exception)
+            catch
             {
                 return false;
             }
@@ -47,6 +47,7 @@ namespace AutotaskShell
         {
             Console.Write("UserName: ");
             var userName = Console.ReadLine();
+
             return userName;
         }
 
@@ -54,10 +55,24 @@ namespace AutotaskShell
         {
             Console.Write("Password: ");
             var originalColor = Console.ForegroundColor;
-            Console.ForegroundColor = Console.BackgroundColor;
+
+            ChangeConsoleToPasswordMode();
             var pass = Console.ReadLine();
-            Console.ForegroundColor = originalColor;
+            RestoreNormalConsole(originalColor);
+
             return pass;
+        }
+        
+        private static void ChangeConsoleToPasswordMode()
+        {
+            Console.ForegroundColor = Console.BackgroundColor;
+            Console.CursorVisible = false;
+        }
+
+        private static void RestoreNormalConsole(ConsoleColor originalColor)
+        {
+            Console.ForegroundColor = originalColor;
+            Console.CursorVisible = true;
         }
     }
 }

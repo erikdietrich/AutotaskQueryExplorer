@@ -9,7 +9,7 @@ using Microsoft.Data.Schema.ScriptDom.Sql;
 
 namespace AutotaskQueryService
 {
-    internal class SqlQuery
+    public class SqlQuery
     {
         private const string SELECT = "select";
         private const string FROM = "from";
