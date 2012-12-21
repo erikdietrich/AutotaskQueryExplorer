@@ -37,6 +37,7 @@ namespace AutotaskQueryService
                 yield return string.Format("{0}", propertyValue);
             }
         }
+
         private static IEnumerable<string> GetQualifyingPropertiesOfType(Type entityType)
         {
             var allProperties = entityType.GetProperties();

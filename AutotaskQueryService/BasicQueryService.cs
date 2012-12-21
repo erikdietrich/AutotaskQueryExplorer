@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutotaskQueryService.net.autotask.webservices5;
 using System.Reflection;
+using System.Linq.Expressions;
 
 namespace AutotaskQueryService
 {
@@ -36,6 +37,9 @@ namespace AutotaskQueryService
             var credCache = new CredentialCache();
             credCache.Add(new Uri(zoneinfo.URL), "Basic", cred);
             _webService.Credentials = credCache;
+
+            if (!_webService.getEntityInfo().Any())
+                throw new InvalidOperationException();
         }
 
         private IEnumerable<Entity> GetEntitiesFromAutotask(string entityName, string whereClause)

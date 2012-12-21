@@ -126,6 +126,27 @@ namespace AutotaskQueryServiceTest
             {
                 Assert.AreEqual<string>(string.Empty, Target.WhereClause);
             }
+
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Does_Not_Include_OrderBy_When_There_Is_An_OrderBy_Clause()
+            {
+                string clause = "id = 12";
+                Target = new SqlQuery(String.Format("SELECT * From Account WHERE {0} ORDER BY id", clause));
+
+                Assert.AreEqual<string>(clause, Target.WhereClause);
+            }
+        }
+
+        [TestClass]
+        public class OrderByClause : SqlQueryTest
+        {
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Returns_Stuff_After_Order_By()
+            {
+                Target = new SqlQuery("SELECT * FROM Account ORDER BY id");
+
+                Assert.AreEqual<string>("id", Target.OrderByClause);
+            }
         }
     }
 }

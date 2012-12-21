@@ -149,7 +149,37 @@ namespace AutotaskQueryServiceTest
                 string stringValue = "value with spaces";
                 Target.SetWhereClause(String.Format("stringcol = '{0}'", stringValue));
 
-                StringAssert.Contains(Target.ToString(), String.Format("op=\"equals\">{0}", stringValue));
+                StringAssert.Contains(Target.ToString(), String.Format("op=\"{1}\">{0}", stringValue, "equals"));
+            }
+
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Results_In_Query_String_Containing_BeginsWith_When_Last_Character_In_String_Clause_Is_Percent()
+            {
+                const string payload = "asdf";
+                string clause = String.Format("id = '{0}%'", payload);
+                Target.SetWhereClause(clause);
+
+                StringAssert.Contains(Target.ToString(), String.Format("{2}=\"{1}\">{0}", payload, AutotaskQuery.BeginsWithOperator, AutotaskQuery.OperatorAttribute));
+            }
+
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Results_In_QueryString_Containing_EndsWith_When_First_Character_In_String_Clause_Is_Percent()
+            {
+                const string payload = "asdf";
+                string clause = String.Format("id = '%{0}'", payload);
+                Target.SetWhereClause(clause);
+
+                StringAssert.Contains(Target.ToString(), String.Format("{2}=\"{1}\">{0}", payload, AutotaskQuery.EndsWithOperator, AutotaskQuery.OperatorAttribute));
+            }
+
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Results_In_QueryString_Containing_Contains_When_First_And_Last_Characters_Are_Percent()
+            {
+                const string payload = "asdf";
+                string clause = String.Format("id = '%{0}%'", payload);
+                Target.SetWhereClause(clause);
+
+                StringAssert.Contains(Target.ToString(), String.Format("{2}=\"{1}\">{0}", payload, AutotaskQuery.ContainsOperator, AutotaskQuery.OperatorAttribute));
             }
         }
     }

@@ -13,7 +13,8 @@ namespace AutotaskQueryService
     {
         private const string SELECT = "select";
         private const string FROM = "from";
-        private const string WHERE = "where";
+        private const string Where = "where";
+        private const string OrderBy = "order by";
 
         public class InvalidSyntaxException : Exception { }
 
@@ -29,15 +30,9 @@ namespace AutotaskQueryService
             } 
         }
 
-        public string WhereClause
-        {
-            get
-            {
-                int index = GetIndexOfLastCharacter(WHERE);
-                bool didWeFindTheString = index >= 0;
-                return didWeFindTheString ? _sql.Substring(index).Trim() : string.Empty;
-            }
-        }
+        public string WhereClause { get { return GetAfterToken(Where, OrderBy); } }
+
+        public string OrderByClause { get { return GetAfterToken(OrderBy); } }
 
         public SqlQuery(string sql)
         {
@@ -67,12 +62,31 @@ namespace AutotaskQueryService
             return columns;
         }
 
+        private string GetAfterToken(string token, string nextToken = null)
+        {
+            int index = GetIndexOfLastCharacter(token);
+            int length = GetLengthUntilNextTokenOrEnd(nextToken, index);
+
+            bool didWeFindTheString = index >= 0;
+            return didWeFindTheString ? _sql.Substring(index, length).Trim() : string.Empty;
+        }
+
         private int GetIndexOfLastCharacter(string substring)
         {
             int startIndex = _sql.IndexOf(substring);
             return startIndex >= 0 ? startIndex + substring.Length : -1;
         }
 
+        private int GetLengthUntilNextTokenOrEnd(string nextToken, int index)
+        {
+            int endindex = DoesNextTokenExist(nextToken, index) ? _sql.IndexOf(nextToken) : _sql.Length;
+            return endindex > index ? endindex - index : _sql.Length - index;
+        }
+
+        private bool DoesNextTokenExist(string nextToken, int index)
+        {
+            return nextToken != null && _sql.IndexOf(nextToken, Math.Max(index, 0), StringComparison.InvariantCultureIgnoreCase) > 0;
+        }
         private IEnumerable<string> GetNonEmptyTokensBetween(int startIndex, int endIndex)
         {
             var columnText = _sql.Substring(startIndex, endIndex - startIndex);
