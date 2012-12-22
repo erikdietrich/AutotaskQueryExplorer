@@ -27,19 +27,35 @@ namespace AutotaskQueryService
         {
             var sqlQuery = new SqlQuery(command);
             var entities = GetEntitiesFromAutotask(sqlQuery.Entity, sqlQuery.WhereClause);
-            return _builder.BuildResultSet(sqlQuery, entities);
+            var orderedEntities = OrderBy(entities, sqlQuery.OrderByClause);
+            return _builder.BuildResultSet(sqlQuery, orderedEntities);
         }
 
         public void Login(string userName, string password)
+        {
+            SetWebServiceCredentials(userName, password);
+            if (!AreWeConnectedToWebService())
+                throw new InvalidOperationException();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void SetWebServiceCredentials(string userName, string password)
         {
             var zoneinfo = _webService.getZoneInfo(userName);
             var cred = new NetworkCredential(userName, password);
             var credCache = new CredentialCache();
             credCache.Add(new Uri(zoneinfo.URL), "Basic", cred);
             _webService.Credentials = credCache;
+        }
 
-            if (!_webService.getEntityInfo().Any())
-                throw new InvalidOperationException();
+        private bool AreWeConnectedToWebService()
+        {
+            return _webService.getEntityInfo().Any();
         }
 
         private IEnumerable<Entity> GetEntitiesFromAutotask(string entityName, string whereClause)
@@ -52,10 +68,13 @@ namespace AutotaskQueryService
             return _webService.query(autotaskQuery.ToString()).EntityResults;
         }
 
-        public void Dispose()
+        private static IEnumerable<T> OrderBy<T>(IEnumerable<T> entities, string propertyName)
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            if (!entities.Any() || string.IsNullOrEmpty(propertyName))
+                return entities;
+
+            var propertyInfo = entities.First().GetType().GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            return entities.OrderBy(e => propertyInfo.GetValue(e, null));
         }
 
         protected virtual void Dispose(bool disposing)

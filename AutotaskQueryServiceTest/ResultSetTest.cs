@@ -96,7 +96,7 @@ namespace AutotaskQueryServiceTest
             {
                 var row = new List<string>() { "a", "b" };
                 Target.Add(row);
-                var rows = new ICollection<string>[3];
+                var rows = new IList<string>[3];
                 Target.CopyTo(rows, 0);
 
                 Assert.AreEqual<string>("a", rows[0].ElementAt(0));
@@ -149,6 +149,78 @@ namespace AutotaskQueryServiceTest
             public void Returns_Result_Set_With_Zero_Rows()
             {
                 Assert.AreEqual<int>(0, ResultSet.Empty.Count);
+            }
+        }
+
+        [TestClass]
+        public class IndexOf : ResultSetTest
+        {
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Returns_IndexOf_Row_In_Question()
+            {
+                var row = new List<string>() { "a", "b" };
+                Target.Add(row);
+
+                Assert.AreEqual<int>(0, Target.IndexOf(row));
+            }
+        }
+
+        [TestClass]
+        public class Insert : ResultSetTest
+        {
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Inserts_Row_Into_Position_In_Question()
+            {
+                var firstRow = new List<string>() { "a", "b" };
+                var secondRow = new List<string>() { "b", "c" };
+
+                Target.Add(firstRow);
+                Target.Insert(0, secondRow);
+
+                Assert.AreEqual<int>(0, Target.IndexOf(secondRow));
+            }
+        }
+
+        [TestClass]
+        public class RemoveAt : ResultSetTest
+        {
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Removes_Element_In_Question()
+            {
+                var firstRow = new List<string>() { "a", "b" };
+                var secondRow = new List<string>() { "b", "c" };
+
+                Target.Add(firstRow);
+                Target.Add(secondRow);
+
+                Target.RemoveAt(0);
+
+                Assert.IsTrue(Target.IndexOf(secondRow) >= 0);
+            }
+        }
+
+        [TestClass]
+        public class Indexer : ResultSetTest
+        {
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Can_Access_Elements()
+            {
+                var firstRow = new List<string>() { "a", "b" };
+
+                Target.Add(firstRow);
+
+                Assert.AreEqual<string>(firstRow[0], Target[0][0]);
+            }
+
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Can_Set_Elements()
+            {
+                var firstRow = new List<string>() { "a", "b" };
+
+                Target.Add(new List<string>() { null, null });
+                Target[0] = firstRow;
+
+                Assert.AreEqual<string>(firstRow[0], Target[0][0]);
             }
         }
     }
