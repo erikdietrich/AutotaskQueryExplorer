@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutotaskQueryExplorer", "AutotaskQueryExplorer\AutotaskQueryExplorer.csproj", "{AFFAC843-90A9-41DB-A598-F12D0D9309B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutotaskQueryExplorerTest", "AutotaskQueryExplorerTest\AutotaskQueryExplorerTest.csproj", "{9C3C1A05-0971-4853-82CF-14923F6C8549}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AFFAC843-90A9-41DB-A598-F12D0D9309B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFFAC843-90A9-41DB-A598-F12D0D9309B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFFAC843-90A9-41DB-A598-F12D0D9309B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFFAC843-90A9-41DB-A598-F12D0D9309B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C3C1A05-0971-4853-82CF-14923F6C8549}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C3C1A05-0971-4853-82CF-14923F6C8549}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C3C1A05-0971-4853-82CF-14923F6C8549}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C3C1A05-0971-4853-82CF-14923F6C8549}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
