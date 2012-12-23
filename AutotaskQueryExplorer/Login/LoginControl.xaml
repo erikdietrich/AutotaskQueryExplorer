@@ -8,8 +8,8 @@
         <TextBlock HorizontalAlignment="Left" Margin="31,24,0,0" TextWrapping="Wrap" Text="UserName: " VerticalAlignment="Top" RenderTransformOrigin="-0.82,0.438"/>
         <TextBox Text="{Binding Username}" HorizontalAlignment="Left" Height="23" Margin="145,17,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
         <TextBlock HorizontalAlignment="Left" Margin="31,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Password:" Width="61"/>
-        <Button Content="Login" Command="{Binding Login}" HorizontalAlignment="Left" Margin="163,96,0,0" VerticalAlignment="Top" Width="75" />
-        <TextBox Text="{Binding Password}"  HorizontalAlignment="Left" Margin="145,45,0,0" VerticalAlignment="Top" Width="120"/>
+        <Button Content="Login" Command="{Binding Login}" CommandParameter="{Binding ElementName=password}" HorizontalAlignment="Left" Margin="163,96,0,0" VerticalAlignment="Top" Width="75" />
+        <PasswordBox x:Name="password" HorizontalAlignment="Left" Margin="145,45,0,0" VerticalAlignment="Top" Width="120"/>
 
     </Grid>
 </UserControl>

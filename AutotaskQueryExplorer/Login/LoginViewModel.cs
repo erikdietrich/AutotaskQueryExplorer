@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace AutotaskQueryExplorer.Login
@@ -32,29 +33,29 @@ namespace AutotaskQueryExplorer.Login
 
         public string Username { get; set; }
 
-        public string Password { get; set; }
-
         public ICommand Login { get; private set; }
 
         public LoginViewModel(IQueryService service)
         {
             _service = service;
-            Login = new SimpleCommand(execute: ExecuteLogin, canExecute: IsLoginInformationComplete);
+            Login = new ParameterCommand<PasswordBox>(execute: ExecuteLogin, canExecute: IsLoginInformationComplete);
         }
 
-        private void ExecuteLogin()
+        private void ExecuteLogin(PasswordBox box)
         {
+            if(box == null)
+                throw new InvalidOperationException("You must specify a password box to execute login.");
             try
             {
-                _service.Login(Username, Password);
+                _service.Login(Username, box.Password);
                 IsUserLoggedIn = true;
             }
             catch { IsUserLoggedIn = false; }
         }
 
-        private bool IsLoginInformationComplete()
+        private bool IsLoginInformationComplete(PasswordBox box)
         {
-            return !string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Password);
+            return !string.IsNullOrEmpty(Username) && box != null && !string.IsNullOrEmpty(box.Password);
         }
 
         private void RaisePropertyChanged(string propertyName)

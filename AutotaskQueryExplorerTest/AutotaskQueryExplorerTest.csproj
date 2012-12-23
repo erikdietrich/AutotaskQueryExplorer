@@ -35,10 +35,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Xaml" />
     <Reference Include="Telerik.JustMock">
       <HintPath>..\packages\JustMock.2012.3.1016.0\lib\Net35\Telerik.JustMock.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -53,6 +57,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Infrastructure\ParameterCommandTest.cs" />
     <Compile Include="Infrastructure\SimpleCommandTest.cs" />
     <Compile Include="Login\LoginViewModelTest.cs" />
     <Compile Include="MainWindowViewModelTest.cs" />

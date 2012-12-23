@@ -78,6 +78,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Infrastructure\ParameterCommand[T].cs" />
     <Compile Include="Infrastructure\SimpleCommand.cs" />
     <Compile Include="Login\LoginControl.xaml.cs">
       <DependentUpon>LoginControl.xaml</DependentUpon>

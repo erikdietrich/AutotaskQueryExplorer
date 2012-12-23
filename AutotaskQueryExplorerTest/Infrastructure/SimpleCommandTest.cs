@@ -24,6 +24,17 @@ namespace AutotaskQueryExplorerTest.Infrastructure
         }
 
         [TestClass]
+        public class Constructor
+        {
+            /// <remarks>Having an instance of this class is terminally stupid if the command is null</remarks>
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Throws_ArgumentNullExcpetion_On_Null_Command()
+            {
+                ExtendedAssert.Throws<ArgumentNullException>(() => new SimpleCommand(null));
+            }
+        }
+
+        [TestClass]
         public class CanExecute : SimpleCommandTest
         {
             [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
@@ -52,13 +63,6 @@ namespace AutotaskQueryExplorerTest.Infrastructure
                 Target.Execute(null);
 
                 Assert.IsTrue(wasCalled);
-            }
-
-            /// <remarks>Having an instance of this class is terminally stupid if the command is null</remarks>
-            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
-            public void Throws_ArgumentNullExcpetion_On_Null_Command()
-            {
-                ExtendedAssert.Throws<ArgumentNullException>(() => new SimpleCommand(null));
             }
         }
     } 
