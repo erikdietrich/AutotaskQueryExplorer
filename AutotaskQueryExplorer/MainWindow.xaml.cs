@@ -32,7 +32,7 @@ namespace AutotaskQueryExplorer
 
         public MainWindow()
         {
-            LoginViewModel = new LoginViewModel(new BasicQueryService());
+            LoginViewModel = new LoginViewModel(new BasicQueryService(webService: new AutotaskWebService()));
             LoginViewModel.PropertyChanged += HandleLoginPropertyChanged;
             DataContext = this;
 

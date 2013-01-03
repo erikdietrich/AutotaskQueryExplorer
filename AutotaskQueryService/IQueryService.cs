@@ -8,7 +8,7 @@ using AutotaskQueryService.net.autotask.webservices5;
 
 namespace AutotaskQueryService
 {
-    public interface IQueryService : IDisposable
+    public interface IQueryService
     {
         ResultSet ExecuteQuery(string command);
 

@@ -50,7 +50,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutotaskQuery.cs" />
+    <Compile Include="AutotaskWebService.cs" />
     <Compile Include="BasicQueryService.cs" />
+    <Compile Include="IAutotaskWebService.cs" />
     <Compile Include="IBuildResultSets.cs" />
     <Compile Include="IQueryService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

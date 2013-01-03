@@ -12,15 +12,16 @@ namespace AutotaskQueryService
 {
     public class BasicQueryService : IQueryService
     {
-        private readonly ATWS _webService = new ATWS();
+        private readonly IAutotaskWebService _webService;
 
         private readonly IBuildResultSets _builder;
 
         /// <summary>Dependency injected constructor</summary>
         /// <param name="builder">The result set builder scheme to use</param>
-        public BasicQueryService(IBuildResultSets builder = null)
+        public BasicQueryService(IBuildResultSets builder = null, IAutotaskWebService webService = null)
         {
             _builder = builder ?? new ResultSetBuilder();
+            _webService = webService ?? new AutotaskWebService();
         }
 
         public ResultSet ExecuteQuery(string command)
@@ -38,15 +39,9 @@ namespace AutotaskQueryService
                 throw new InvalidOperationException();
         }
 
-        public void Dispose()
+        void SetWebServiceCredentials(string userName, string password)
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void SetWebServiceCredentials(string userName, string password)
-        {
-            var zoneinfo = _webService.getZoneInfo(userName);
+            var zoneinfo = _webService.GetZoneInfo(userName);
             var cred = new NetworkCredential(userName, password);
             var credCache = new CredentialCache();
             credCache.Add(new Uri(zoneinfo.URL), "Basic", cred);
@@ -55,7 +50,7 @@ namespace AutotaskQueryService
 
         private bool AreWeConnectedToWebService()
         {
-            return _webService.getEntityInfo().Any();
+            return _webService.GetEntityInfo().Any();
         }
 
         private IEnumerable<Entity> GetEntitiesFromAutotask(string entityName, string whereClause)
@@ -65,7 +60,23 @@ namespace AutotaskQueryService
             if (!string.IsNullOrEmpty(whereClause))
                 autotaskQuery.SetWhereClause(whereClause);
 
-            return _webService.query(autotaskQuery.ToString()).EntityResults;
+            return _webService.Query(autotaskQuery.ToString()).EntityResults;
+        }
+
+        private IEnumerable<Entity> RetrieveAll(string entityName, AutotaskQuery query)
+        {
+            var entities = new List<Entity>();
+
+            var result = _webService.Query(query.ToString());
+            entities.Concat(result.EntityResults);
+
+            while (result.EntityResults.Count() == 500)
+            {
+                result = _webService.Query(query.ToString());
+                entities.Concat(result.EntityResults);
+            }
+
+            return entities;
         }
 
         private static IEnumerable<T> OrderBy<T>(IEnumerable<T> entities, string propertyName)
@@ -75,17 +86,6 @@ namespace AutotaskQueryService
 
             var propertyInfo = entities.First().GetType().GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
             return entities.OrderBy(e => propertyInfo.GetValue(e, null));
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing && _webService != null)
-                _webService.Dispose();
-        }
-
-        ~BasicQueryService()
-        {
-            Dispose(false);
         }
     }
 }

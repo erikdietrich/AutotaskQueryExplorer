@@ -11,20 +11,25 @@ namespace AutotaskShell
 {
     class Program
     {
-        private static BasicQueryService _service;
+        private static IQueryService _service;
 
         static void Main(string[] args)
         {
-            using (_service = new BasicQueryService())
+            using(var webService = new AutotaskWebService())
             {
+                _service = new BasicQueryService(webService: webService);
                 var gatekeeper = new Gatekeeper(_service);
                 gatekeeper.TryLoginUntilSuccess();
 
-                Console.Write(">");
-
-                for (string command = Console.ReadLine(); !IsExitCommand(command); command = Console.ReadLine())
-                    ExecuteCommand(command);
+                LoopInCommandModeUntilExitRequest();
             }
+        }
+
+        private static void LoopInCommandModeUntilExitRequest()
+        {
+            Console.Write(">");
+            for (string command = Console.ReadLine(); !IsExitCommand(command); command = Console.ReadLine())
+                ExecuteCommand(command);
         }
 
         private static bool IsExitCommand(string query)
