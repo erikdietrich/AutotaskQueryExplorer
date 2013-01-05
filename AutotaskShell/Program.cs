@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -12,6 +13,8 @@ namespace AutotaskShell
     class Program
     {
         private static IQueryService _service;
+
+        private static ResultSet _mostRecent;
 
         static void Main(string[] args)
         {
@@ -49,39 +52,25 @@ namespace AutotaskShell
 
         private static bool IsNonQueryCommand(string command)
         {
-            return command.Equals("clear", StringComparison.InvariantCultureIgnoreCase);
+            return command.Equals("clear", StringComparison.InvariantCultureIgnoreCase) || command.StartsWith("export", StringComparison.InvariantCultureIgnoreCase);
         }
 
         private static void PerformNonQueryCommand(string command)
         {
-            if(command.Equals("clear", StringComparison.InvariantCultureIgnoreCase))
+            if (command.Equals("clear", StringComparison.InvariantCultureIgnoreCase))
                 Console.Clear();
+            else if (command.StartsWith("export", StringComparison.InvariantCultureIgnoreCase))
+            {
+                if (!TryDumpToFile(command.Split(' ').FirstOrDefault(str => !str.Equals("export", StringComparison.InvariantCultureIgnoreCase))))
+                    Console.WriteLine("Invalid file specified.");
+            }
         }
 
         private static void PerformQueryCommand(string query)
         {
-            var resultSet = TryExecuteQuery(query);
-            WriteHeader(resultSet);
-            WriteResults(resultSet);
-        }
-
-        private static void WriteHeader(ResultSet resultSet)
-        {
-            foreach (var headerItem in resultSet.HeaderRow)
-                Console.Write(string.Format(" {0} ", headerItem));
-
-            Console.Write("\n\n");
-        }
-        private static void WriteResults(ResultSet resultSet)
-        {
-            foreach (var row in resultSet)
-                WriteRow(row);
-        }
-        private static void WriteRow(IEnumerable<string> row)
-        {
-            foreach (var column in row)
-                Console.Write(string.Format(" {0} ", column));
-            Console.Write('\n');
+            _mostRecent = TryExecuteQuery(query);
+            WriteHeader(_mostRecent);
+            WriteResults(_mostRecent);
         }
 
         private static ResultSet TryExecuteQuery(string command)
@@ -95,6 +84,48 @@ namespace AutotaskShell
                 Console.WriteLine("Invalid query caused error: " + ex.Message);
                 return ResultSet.Empty;
             }
-        }        
+        }
+
+        #region This contains the mechanics of should probably become its own class
+
+        private static bool TryDumpToFile(string filename)
+        {
+            try
+            {
+                DumpToFile(filename);
+            }
+            catch { return false; }
+            return true;
+        }
+
+        private static void DumpToFile(string filename)
+        {
+            using (var stream = File.CreateText(filename))
+            {
+                WriteHeader(_mostRecent, stream);
+                WriteResults(_mostRecent, stream);
+            }
+        }
+
+        private static void WriteHeader(ResultSet resultSet, TextWriter writer = null)
+        {
+            var theWriter = writer ?? Console.Out;
+            theWriter.WriteLine(String.Join("|", resultSet.HeaderRow));
+            theWriter.Write("\n");
+        }
+
+        private static void WriteResults(ResultSet resultSet, TextWriter writer = null)
+        {
+            foreach (var row in resultSet)
+                WriteRowToConsole(row, writer);
+        }
+
+        private static void WriteRowToConsole(IList<string> row, TextWriter writer = null)
+        {
+            var theWriter = writer ?? Console.Out;
+            theWriter.WriteLine(string.Join("|", row));
+        }
+
+        #endregion
     }
 }
