@@ -63,22 +63,6 @@ namespace AutotaskQueryService
             return _webService.Query(autotaskQuery.ToString()).EntityResults;
         }
 
-        private IEnumerable<Entity> RetrieveAll(string entityName, AutotaskQuery query)
-        {
-            var entities = new List<Entity>();
-
-            var result = _webService.Query(query.ToString());
-            entities.Concat(result.EntityResults);
-
-            while (result.EntityResults.Count() == 500)
-            {
-                result = _webService.Query(query.ToString());
-                entities.Concat(result.EntityResults);
-            }
-
-            return entities;
-        }
-
         private static IEnumerable<T> OrderBy<T>(IEnumerable<T> entities, string propertyName)
         {
             if (!entities.Any() || string.IsNullOrEmpty(propertyName))
