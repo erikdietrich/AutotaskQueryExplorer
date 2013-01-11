@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using AutotaskQueryService;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -180,6 +181,24 @@ namespace AutotaskQueryServiceTest
                 Target.SetWhereClause(clause);
 
                 StringAssert.Contains(Target.ToString(), String.Format("{2}=\"{1}\">{0}", payload, AutotaskQuery.ContainsOperator, AutotaskQuery.OperatorAttribute));
+            }
+
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Results_In_ToString_Containing_Condition_Node()
+            {
+                Target.SetWhereClause("id = 123");
+
+                Assert.IsTrue(Target.ToString().Contains(AutotaskQuery.ConditionNodeName));
+            }
+
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Results_In_ToString_Containing_Two_Condition_Nodes_When_Clause_Contains_And()
+            {
+                Target.SetWhereClause("id = 123 AND accountid = 456");
+
+                var xml = XDocument.Parse(Target.ToString());
+
+                Assert.AreEqual<int>(2, xml.Descendants(AutotaskQuery.ConditionNodeName).Count());
             }
         }
     }

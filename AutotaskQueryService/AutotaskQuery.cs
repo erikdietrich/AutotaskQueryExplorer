@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace AutotaskQueryService
@@ -12,6 +13,8 @@ namespace AutotaskQueryService
         public const string QueryNodeName = "query";
         public const string FieldNodeName = "field";
         public const string ExpressionNodeName = "expression";
+        public const string ConditionNodeName = "condition";
+
         public const string OperatorAttribute = "op";
         public const string Wildcard = "%";
         public const string BeginsWithOperator = "beginswith";
@@ -28,7 +31,7 @@ namespace AutotaskQueryService
                 { "<=", "lessthanorequals"},
             };
 
-        private readonly List<XElement> _queryClauses = new List<XElement>();
+        private readonly List<XElement> _conditionClauses = new List<XElement>();
 
         public string Entity { get; private set; }
 
@@ -38,27 +41,30 @@ namespace AutotaskQueryService
                 throw new ArgumentException("entity");
 
             Entity = entity;
-            _queryClauses.Add(BuildQueryNode("id", _operatorMappings[">"], "0"));
+            _conditionClauses.Add(BuildConditionNode("id", _operatorMappings[">"], "0"));
         }
 
         public void SetWhereClause(string sqlClause)
         {
-            _queryClauses.Clear();
+            _conditionClauses.Clear();
+            foreach (var clause in Regex.Split(sqlClause, "AND", RegexOptions.IgnoreCase).Select(str => str.Trim()))
+            {
+                var tokens = clause.Split(' ');
+                string field = tokens[0];
+                string op = _operatorMappings[tokens[1]];
+                string value = GetValue(tokens);
 
-            var tokens = sqlClause.Split(' ');
-            string field = tokens[0];
-            string op = _operatorMappings[tokens[1]];
-            string value = GetValue(tokens);
-
-            var queryNode = BuildQueryNode(field, op, value.Replace("'", string.Empty));
-            _queryClauses.Add(queryNode);
+                var queryNode = BuildConditionNode(field, op, value.Replace("'", string.Empty));
+                _conditionClauses.Add(queryNode);
+            }
         }
 
         public override string ToString()
         {
             var entityNode = new XElement(EntityNodeName, Entity);
+            var queryNode = new XElement(QueryNodeName, _conditionClauses);
+            var rootNode = new XElement(RootNodeName, entityNode, queryNode);
 
-            var rootNode = new XElement(RootNodeName, entityNode, _queryClauses[0]);
             return rootNode.ToString();
         }
 
@@ -72,11 +78,11 @@ namespace AutotaskQueryService
 
         #region Could be a class?
 
-        private static XElement BuildQueryNode(string fieldName, string op, string value)
+        private static XElement BuildConditionNode(string fieldName, string op, string value)
         {
             var expressionNode = BuildExpressionNode(op, value);
             var fieldNode = new XElement(FieldNodeName, fieldName, expressionNode);
-            return new XElement(QueryNodeName, fieldNode);
+            return new XElement(ConditionNodeName, fieldNode);
         }
 
         private static XElement BuildExpressionNode(string op, string value)

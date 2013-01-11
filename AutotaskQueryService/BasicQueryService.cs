@@ -42,10 +42,10 @@ namespace AutotaskQueryService
         void SetWebServiceCredentials(string userName, string password)
         {
             var zoneinfo = _webService.GetZoneInfo(userName);
-            var cred = new NetworkCredential(userName, password);
-            var credCache = new CredentialCache();
-            credCache.Add(new Uri(zoneinfo.URL), "Basic", cred);
-            _webService.Credentials = credCache;
+            var credential = new NetworkCredential(userName, password);
+            var credentialCache = new CredentialCache();
+            credentialCache.Add(new Uri(zoneinfo.URL), "Basic", credential);
+            _webService.Credentials = credentialCache;
         }
 
         private bool AreWeConnectedToWebService()
