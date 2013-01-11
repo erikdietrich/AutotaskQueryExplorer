@@ -24,6 +24,8 @@ namespace AutotaskQueryService
             _webService = webService ?? new AutotaskWebService();
         }
 
+        #region Public API
+
         public ResultSet ExecuteQuery(string command)
         {
             var sqlQuery = new SqlQuery(command);
@@ -39,7 +41,9 @@ namespace AutotaskQueryService
                 throw new InvalidOperationException();
         }
 
-        void SetWebServiceCredentials(string userName, string password)
+        #endregion
+
+        private void SetWebServiceCredentials(string userName, string password)
         {
             var zoneinfo = _webService.GetZoneInfo(userName);
             var credential = new NetworkCredential(userName, password);
@@ -57,10 +61,25 @@ namespace AutotaskQueryService
         {
             var autotaskQuery = new AutotaskQuery(entityName);
 
-            if (!string.IsNullOrEmpty(whereClause))
+            if(!string.IsNullOrEmpty(whereClause))
                 autotaskQuery.SetWhereClause(whereClause);
 
-            return _webService.Query(autotaskQuery.ToString()).EntityResults;
+            return ExecuteSelect(autotaskQuery);
+        }
+
+        private IEnumerable<Entity> ExecuteSelect(AutotaskQuery query)
+        {
+            var entitiesToReturn = new List<Entity>();
+            bool moreToFetch = true;
+            while (moreToFetch)
+            {
+                var results = _webService.Query(query.ToString()).EntityResults;
+                query.SetIdFloor(results.Any() ? results.Max(ent => ent.id) : 0);
+                moreToFetch = results.Count() == 500;
+                entitiesToReturn.AddRange(results);
+            }
+
+            return entitiesToReturn;
         }
 
         private static IEnumerable<T> OrderBy<T>(IEnumerable<T> entities, string propertyName)

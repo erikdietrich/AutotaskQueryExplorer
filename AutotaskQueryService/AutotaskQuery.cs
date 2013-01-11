@@ -31,7 +31,9 @@ namespace AutotaskQueryService
                 { "<=", "lessthanorequals"},
             };
 
-        private readonly List<XElement> _conditionClauses = new List<XElement>();
+        private readonly List<XElement> _conditionNodes = new List<XElement>();
+
+        #region Public API
 
         public string Entity { get; private set; }
 
@@ -41,39 +43,58 @@ namespace AutotaskQueryService
                 throw new ArgumentException("entity");
 
             Entity = entity;
-            _conditionClauses.Add(BuildConditionNode("id", _operatorMappings[">"], "0"));
+            _conditionNodes.Add(BuildConditionNode("id", _operatorMappings[">"], "0"));
         }
 
         public void SetWhereClause(string sqlClause)
         {
-            _conditionClauses.Clear();
-            foreach (var clause in Regex.Split(sqlClause, "AND", RegexOptions.IgnoreCase).Select(str => str.Trim()))
-            {
-                var tokens = clause.Split(' ');
-                string field = tokens[0];
-                string op = _operatorMappings[tokens[1]];
-                string value = GetValue(tokens);
+            _conditionNodes.Clear();
+            var queryClauses = Regex.Split(sqlClause, "AND", RegexOptions.IgnoreCase).Select(str => str.Trim());
+            foreach (var clause in queryClauses)
+                GenerateConditionNodeFromClause(clause);
+        }
 
-                var queryNode = BuildConditionNode(field, op, value.Replace("'", string.Empty));
-                _conditionClauses.Add(queryNode);
-            }
+        public void SetIdFloor(long floor)
+        {
+            GenerateConditionNodeFromClause("id > " + floor);
         }
 
         public override string ToString()
         {
             var entityNode = new XElement(EntityNodeName, Entity);
-            var queryNode = new XElement(QueryNodeName, _conditionClauses);
+            var queryNode = new XElement(QueryNodeName, _conditionNodes);
             var rootNode = new XElement(RootNodeName, entityNode, queryNode);
 
             return rootNode.ToString();
         }
 
-        private static string GetValue(string[] tokens)
+        #endregion
+
+        private static string GetValueWithoutQuotes(string[] tokens)
         {
             if (tokens.Count() > 3)
                 return String.Join(" ", tokens.Skip(2));
             else
                 return tokens[2];
+        }
+
+        private void GenerateConditionNodeFromClause(string clause)
+        {
+            if (!string.IsNullOrEmpty(clause))
+            {
+                var conditionNode = BuildNodeFromConditionClause(clause);
+                _conditionNodes.Add(conditionNode);
+            }
+        }
+
+        private XElement BuildNodeFromConditionClause(string clause)
+        {
+            var tokens = clause.Split(' ');
+            string field = tokens[0];
+            string op = _operatorMappings[tokens[1]];
+            string value = GetValueWithoutQuotes(tokens);
+
+            return BuildConditionNode(field, op, value.Replace("'", string.Empty));
         }
 
         #region Could be a class?

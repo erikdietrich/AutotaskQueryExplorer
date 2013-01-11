@@ -201,5 +201,19 @@ namespace AutotaskQueryServiceTest
                 Assert.AreEqual<int>(2, xml.Descendants(AutotaskQuery.ConditionNodeName).Count());
             }
         }
+
+        [TestClass]
+        public class SetIdFloor : AutotaskQueryTest
+        {
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Results_In_Extra_Where_Condition()
+            {
+                int conditionsBefore = XDocument.Parse(Target.ToString()).Descendants(AutotaskQuery.ConditionNodeName).Count();
+                Target.SetIdFloor(123);
+                int conditionsAfter = XDocument.Parse(Target.ToString()).Descendants(AutotaskQuery.ConditionNodeName).Count();
+
+                Assert.AreEqual<int>(conditionsBefore + 1, conditionsAfter);
+            }
+        }
     }
 }
