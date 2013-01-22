@@ -80,8 +80,12 @@
     </ApplicationDefinition>
     <Compile Include="Infrastructure\ParameterCommand[T].cs" />
     <Compile Include="Infrastructure\SimpleCommand.cs" />
+    <Compile Include="Infrastructure\ViewModel.cs" />
     <Compile Include="Login\LoginControl.xaml.cs">
       <DependentUpon>LoginControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Results\QueryTool.xaml.cs">
+      <DependentUpon>QueryTool.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -97,6 +101,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Login\LoginControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Results\QueryTool.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

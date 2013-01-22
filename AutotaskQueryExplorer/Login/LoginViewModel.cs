@@ -11,23 +11,20 @@ using System.Windows.Input;
 
 namespace AutotaskQueryExplorer.Login
 {
-    public class LoginViewModel : INotifyPropertyChanged
+    public class LoginViewModel : ViewModel
     {
         private bool _isUserLoggedIn;
         private readonly IQueryService _service;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        #region Public API
 
         public bool IsUserLoggedIn
         {
-            get
-            {
-                return _isUserLoggedIn;
-            }
+            get { return _isUserLoggedIn; }
             private set
             {
                 _isUserLoggedIn = value;
-                RaisePropertyChanged("IsUserLoggedIn");
+                RaisePropertyChanged();
             }
         }
 
@@ -35,15 +32,23 @@ namespace AutotaskQueryExplorer.Login
 
         public ICommand Login { get; private set; }
 
+        #endregion
+
+        #region Constructor
+
         public LoginViewModel(IQueryService service)
         {
             _service = service;
             Login = new ParameterCommand<PasswordBox>(execute: ExecuteLogin, canExecute: IsLoginInformationComplete);
         }
 
+        #endregion
+
+        #region Helper Methods
+
         private void ExecuteLogin(PasswordBox box)
         {
-            if(box == null)
+            if (box == null)
                 throw new InvalidOperationException("You must specify a password box to execute login.");
             try
             {
@@ -58,11 +63,6 @@ namespace AutotaskQueryExplorer.Login
             return !string.IsNullOrEmpty(Username) && box != null && !string.IsNullOrEmpty(box.Password);
         }
 
-        private void RaisePropertyChanged(string propertyName)
-        {
-            var propertyChanged = PropertyChanged;
-            if(propertyChanged != null)
-                propertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
+        #endregion
     }
 }
