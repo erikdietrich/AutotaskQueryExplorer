@@ -87,6 +87,7 @@
     <Compile Include="Results\QueryTool.xaml.cs">
       <DependentUpon>QueryTool.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Results\QueryToolViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

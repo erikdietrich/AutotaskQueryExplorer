@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AutotaskQueryExplorer.Results;
 
 namespace AutotaskQueryExplorer
 {
@@ -25,14 +26,22 @@ namespace AutotaskQueryExplorer
     {
         public LoginViewModel LoginViewModel { get; private set; }
 
+        public QueryToolViewModel QueryToolViewModel { get; private set; }
+
         public Visibility LoginVisibility
         {
-            get { return LoginViewModel.IsUserLoggedIn ? Visibility.Hidden : Visibility.Visible; }
+            get { return LoginViewModel.IsUserLoggedIn ? Visibility.Collapsed : Visibility.Visible; }
         }
+
+        public Visibility MainVisibility { get { return LoginVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible; } }
 
         public MainWindow()
         {
-            LoginViewModel = new LoginViewModel(new BasicQueryService(webService: new AutotaskWebService()));
+            var queryService = new BasicQueryService(webService: new AutotaskWebService());
+
+            LoginViewModel = new LoginViewModel(queryService);
+            QueryToolViewModel = new QueryToolViewModel(queryService); 
+            
             LoginViewModel.PropertyChanged += HandleLoginPropertyChanged;
             DataContext = this;
 
