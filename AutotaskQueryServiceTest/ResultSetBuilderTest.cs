@@ -54,6 +54,26 @@ namespace AutotaskQueryServiceTest
 
                 Assert.AreEqual<int>(1, resultSet.HeaderRow.Count);
             }
+
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Returns_Set_With_id_Column()
+            {
+                var entities = Enumerable.Empty<Invoice>();
+
+                var resultSet = Target.BuildResultSet(new SqlQuery("SELECT * FROM Invoice"), entities);
+
+                Assert.IsTrue(resultSet.HeaderRow.Contains("id"));
+            }
+
+            [TestMethod, Owner("ebd"), TestCategory("Proven"), TestCategory("Unit")]
+            public void Returns_Set_With_id_Column_First()
+            {
+                var entities = Enumerable.Empty<Invoice>();
+
+                var resultSet = Target.BuildResultSet(new SqlQuery("SELECT * FROM Invoice"), entities);
+
+                Assert.IsTrue(resultSet.HeaderRow.First() == "id");
+            }
         }
     }
 }

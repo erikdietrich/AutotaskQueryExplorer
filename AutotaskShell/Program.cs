@@ -110,7 +110,7 @@ namespace AutotaskShell
         private static void WriteHeader(ResultSet resultSet, TextWriter writer = null)
         {
             var theWriter = writer ?? Console.Out;
-            theWriter.WriteLine(String.Join("|", resultSet.HeaderRow));
+            theWriter.WriteLine(String.Join(" | ", resultSet.HeaderRow));
             theWriter.Write("\n");
         }
 
@@ -123,7 +123,7 @@ namespace AutotaskShell
         private static void WriteRowToConsole(IList<string> row, TextWriter writer = null)
         {
             var theWriter = writer ?? Console.Out;
-            theWriter.WriteLine(string.Join("|", row));
+            theWriter.WriteLine(string.Join(" | ", row));
         }
 
         #endregion

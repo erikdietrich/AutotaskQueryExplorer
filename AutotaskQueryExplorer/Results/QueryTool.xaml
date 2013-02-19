@@ -4,21 +4,56 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
-    <UserControl.Resources>
-        <DataTemplate x:Key="RowTemplate">
-            <ItemsControl ItemsSource="{Binding Row}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </DataTemplate>
-    </UserControl.Resources>
-    <Grid Margin="0,0,-46,0">
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="20,35,0,0" TextWrapping="Wrap" Text="{Binding Query}" VerticalAlignment="Top" Width="219"/>
-        <Button Content="Execute" Command="{Binding RunQuery}" HorizontalAlignment="Left" Margin="261,36,0,0" VerticalAlignment="Top" Width="75"/>
-        <ItemsControl ItemsSource="{Binding Results}" ItemTemplate="{StaticResource RowTemplate}"/>
+             d:DesignHeight="300" d:DesignWidth="456">
+    <Grid Margin="0,0,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="4*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="-98,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Query:"/></TextBlock>
+        <TextBox Grid.Row="0" HorizontalAlignment="Left" Height="78" Margin="-31,35,-46,0" TextWrapping="Wrap" Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="533" Grid.RowSpan="2"/>
+        <Button Grid.Row="0" Content="Execute" Command="{Binding RunQuery}" HorizontalAlignment="Left" Margin="524,29,-143,0" VerticalAlignment="Top" Width="75"/>
+
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="15"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <ItemsControl Grid.Row="0" ItemsSource="{Binding Results.HeaderRow}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock FontWeight="Bold" Background="Gray" Width="300" Text="{Binding}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding Results}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ItemsControl ItemsSource="{Binding}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Width="300" Text="{Binding}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </UserControl>

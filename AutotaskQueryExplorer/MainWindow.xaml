@@ -3,9 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:login="clr-namespace:AutotaskQueryExplorer.Login"
         xmlns:results="clr-namespace:AutotaskQueryExplorer.Results"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="650" Width="925">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="VisibilityOfBool" />
+    </Window.Resources>
     <Grid>
-        <login:LoginControl Visibility="{Binding LoginVisibility}" DataContext="{Binding LoginViewModel}" Margin="104,80,87,80"/>
-        <results:QueryTool Visibility="{Binding MainVisibility}" HorizontalContentAlignment="Center" DataContext="{Binding QueryToolViewModel}"/>
+        <Grid Visibility="{Binding Path=IsLoginVisible, Converter={StaticResource VisibilityOfBool}}">
+            <login:LoginControl DataContext="{Binding LoginViewModel}" Margin="104,80,87,80"/>
+        </Grid>
+        <Grid Visibility="{Binding Path=IsMainVisibile, Converter={StaticResource VisibilityOfBool}}">
+            <results:QueryTool HorizontalContentAlignment="Center" DataContext="{Binding QueryToolViewModel}"/>
+        </Grid>
     </Grid>
 </Window>

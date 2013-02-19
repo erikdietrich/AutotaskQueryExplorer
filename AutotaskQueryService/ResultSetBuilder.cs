@@ -41,7 +41,8 @@ namespace AutotaskQueryService
         private static IEnumerable<string> GetQualifyingPropertiesOfType(Type entityType)
         {
             var allProperties = entityType.GetProperties();
-            var qualifyingProperties = allProperties.Where(pr => pr.PropertyType == typeof(Object));
+            var qualifyingProperties = allProperties.Where(pr => pr.Name == "id").Union(
+                allProperties.Where(pr => pr.PropertyType == typeof(Object)));
             return qualifyingProperties.Select(pr => pr.Name.ToLower());
         }
     }

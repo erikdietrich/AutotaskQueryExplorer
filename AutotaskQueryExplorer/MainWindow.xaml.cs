@@ -25,15 +25,9 @@ namespace AutotaskQueryExplorer
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public LoginViewModel LoginViewModel { get; private set; }
-
         public QueryToolViewModel QueryToolViewModel { get; private set; }
-
-        public Visibility LoginVisibility
-        {
-            get { return LoginViewModel.IsUserLoggedIn ? Visibility.Collapsed : Visibility.Visible; }
-        }
-
-        public Visibility MainVisibility { get { return LoginVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible; } }
+        public bool IsLoginVisible { get { return !LoginViewModel.IsUserLoggedIn; } }
+        public bool IsMainVisibile { get { return !IsLoginVisible; } }
 
         public MainWindow()
         {
@@ -53,7 +47,10 @@ namespace AutotaskQueryExplorer
         private void HandleLoginPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "IsUserLoggedIn")
-                RaisePropertyChanged("LoginVisibility");
+            {
+                RaisePropertyChanged("IsLoginVisible");
+                RaisePropertyChanged("IsMainVisibile");
+            }
         }
 
         private void RaisePropertyChanged(string propertyName)
