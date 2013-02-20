@@ -40,6 +40,8 @@ namespace AutotaskShell
             return query.Equals("exit", StringComparison.CurrentCultureIgnoreCase);
         }
 
+        /// <remarks>This whole non-query command needs to be factoried and first class object-ed down in the service
+        /// layer.  The service should expose a way to see if its a command and execute it if so</remarks>
         private static void ExecuteCommand(string command)
         {
             if (IsNonQueryCommand(command))
@@ -52,7 +54,9 @@ namespace AutotaskShell
 
         private static bool IsNonQueryCommand(string command)
         {
-            return command.Equals("clear", StringComparison.InvariantCultureIgnoreCase) || command.StartsWith("export", StringComparison.InvariantCultureIgnoreCase);
+            return command.Equals("clear", StringComparison.InvariantCultureIgnoreCase) || 
+                command.StartsWith("export", StringComparison.InvariantCultureIgnoreCase) || 
+                command.StartsWith("show", StringComparison.InvariantCultureIgnoreCase);
         }
 
         private static void PerformNonQueryCommand(string command)
@@ -63,6 +67,11 @@ namespace AutotaskShell
             {
                 if (!TryDumpToFile(command.Split(' ').FirstOrDefault(str => !str.Equals("export", StringComparison.InvariantCultureIgnoreCase))))
                     Console.WriteLine("Invalid file specified.");
+            }
+            else if (command.StartsWith("show"))
+            {
+                var tableName = command.Split(' ').Skip(1).First();
+                PerformQueryCommand(String.Format("select * from {0} where 1 = 0", tableName));
             }
         }
 
